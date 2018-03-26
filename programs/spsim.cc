@@ -66,6 +66,15 @@ unsigned int read_parameters(int argc, char *argv[], ParameterHandler& param)
 {
 	// Declare parameters and read input file
 	declare_parameters(param);
+	
+	if ( argc > 1 && std::string(argv[1]) == "-help") {
+		std::cout << "Copyright (C) 2018  Lars Hov Odsæter" << std::endl
+			      << "Open license, GNU GPLv3: https://www.gnu.org/copyleft/gpl.html" << std::endl << std::endl;
+		std::cout << "Usage: " << argv[0] << " input.prm" << std::endl << std::endl;
+		param.print_parameters(std::cout, ParameterHandler::OutputStyle::Text);
+		exit(0);
+	}
+	
 	if (argc < 2)
 		std::cout << "Warning: No input given. Using default setup."
 				  << std::endl << std::endl;

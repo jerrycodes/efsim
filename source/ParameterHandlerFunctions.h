@@ -48,7 +48,7 @@ void declare_parameters(ParameterHandler& param)
 		param.declare_entry("VTK file",
 							"grid.vtk",
 							Patterns::Anything(),
-							"VTK file name");
+							"VTK file name (if VTK format)");
 		param.declare_entry("Global refinement",
 						    "4",
 							Patterns::Integer(),
@@ -60,7 +60,7 @@ void declare_parameters(ParameterHandler& param)
 		param.declare_entry("Distortion factor",
 							"0.0",
 							Patterns::Double(),
-							"Distortion factor");
+							"Distortion factor for vertices (to produce irregular mesh)");
 	}
 	param.leave_subsection();
 	param.enter_subsection("Global");
@@ -68,7 +68,7 @@ void declare_parameters(ParameterHandler& param)
 		param.declare_entry("Problem type",
 						    "LOWPERM_REGION",
 							Patterns::Anything(),
-							"Problem type. Either LOWPERM_REGION, SIMPLE_ANALYTIC, or SANGHYUN");
+							"Problem type, see ProblemFunctions.h for a list of choices");
 		param.declare_entry("Time step size",
 							"0.01",
 							Patterns::Double(),
@@ -97,14 +97,10 @@ void declare_parameters(ParameterHandler& param)
 							"1.0",
 							Patterns::Double(),
 							"Coefficient in front of dp/dt term");
-		param.declare_entry("Permeability fracture",
-							"1.0",
-							Patterns::Double(),
-							"Permeability fracture");
 		param.declare_entry("Dirichlet penalty",
 						    "10.0",
 							Patterns::Double(),
-							"Dirichlet penalty coefficient (sigma)");
+							"Dirichlet penalty coefficient (if weak boundary conditions)");
 		param.declare_entry("Output file base",
 							"solution_pressure",
 							Patterns::Anything(),
@@ -189,30 +185,6 @@ void declare_parameters(ParameterHandler& param)
 							"1",
 							Patterns::Integer(),
 							"Output every stride'th time step");
-	}
-	param.leave_subsection();
-	param.enter_subsection("Adaptivity");
-	{
-		param.declare_entry("Refine ratio",
-							"1.0",
-							Patterns::Double(),
-							"Ratio of cells/error to be refined [0,1]");
-		param.declare_entry("Criteria",
-							"ErrorL2L2",
-							Patterns::Anything(),
-							"Criteria used for adaptive refinement");
-		param.declare_entry("Strategy",
-							"FixedNumber",
-							Patterns::Selection("FixedNumber|FixedFraction"),
-							"Refinment strategy, either fraction of cells (FixedNumber), or fraction of error(FixedFraction)");
-		param.declare_entry("Max cycles",
-							"3",
-							Patterns::Integer(),
-							"Maximum number of refinement cycles");
-		param.declare_entry("Error tolerance",
-							"0.01",
-							Patterns::Double(),
-							"Tolerance in L2(L2) error");
 	}
 	param.leave_subsection();
 }

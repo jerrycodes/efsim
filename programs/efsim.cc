@@ -214,6 +214,15 @@ unsigned int read_parameters(int argc, char *argv[], ParameterHandler& param)
 {
 	// Declare parameters and read input file
 	declare_parameters_fracture(param);
+	
+	if ( argc > 1 && std::string(argv[1]) == "-help") {
+		std::cout << "Copyright (C) 2018  Lars Hov Odsæter" << std::endl
+			      << "Open license, GNU GPLv3: https://www.gnu.org/copyleft/gpl.html" << std::endl << std::endl;
+		std::cout << "Usage: " << argv[0] << " input.prm" << std::endl << std::endl;
+		param.print_parameters(std::cout, ParameterHandler::OutputStyle::Text);
+		exit(0);
+	}
+	
 	if (argc < 2)
 		std::cout << "Warning: No input given. Using default setup."
 				  << std::endl << std::endl;
@@ -271,7 +280,7 @@ void declare_parameters_fracture(ParameterHandler& param)
 		param.declare_entry("Problem type",
 						    "FRACTURE_TEST",
 							Patterns::Anything(),
-							"Problem type.");
+							"Problem type, see ProblemFunctions.h for list of possible choices");
 		param.declare_entry("Time step size",
 							"0.01",
 							Patterns::Double(),
@@ -295,7 +304,7 @@ void declare_parameters_fracture(ParameterHandler& param)
 		param.declare_entry("Permeability fracture",
 							"1.0",
 							Patterns::Double(),
-							"Permeability fracture");
+							"Permeability in fractures");
 		param.declare_entry("Width",
 							"1.0",
 							Patterns::Double(),
@@ -303,7 +312,7 @@ void declare_parameters_fracture(ParameterHandler& param)
 		param.declare_entry("Velocity fracture",
 							"0.0",
 							Patterns::Double(),
-							"Fracture velocity");
+							"Fracture velocity (if use explicit velocity)");
 		param.declare_entry("Output file base",
 							"fracture_filename",
 							Patterns::Anything(),
@@ -315,7 +324,7 @@ void declare_parameters_fracture(ParameterHandler& param)
 		param.declare_entry("Dirichlet penalty",
 						    "10.0",
 							Patterns::Double(),
-							"Dirichlet penalty coefficient (sigma)");
+							"Dirichlet penalty coefficient (if weak boundary conditions)");
 		param.declare_entry("Output file base",
 							"solution_pressure",
 							Patterns::Anything(),
