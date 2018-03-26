@@ -126,6 +126,7 @@ void EllipticPressureSolver<dim>::run()
 }
 
 
+// Solve dual problem
 template <int dim>
 void EllipticPressureSolver<dim>::run_dual()
 {
@@ -356,7 +357,7 @@ void EllipticPressureSolver<dim>::add_neumann_contrib_fracture(const EmbeddedSur
 }
 
 
-
+// WIP: routine to try to stabilize fractures.
 template <int dim>
 void EllipticPressureSolver<dim>::stabilize_fractures()
 {
@@ -486,7 +487,7 @@ void EllipticPressureSolver<dim>::assemble_stabilization_face_contribution(const
 } 
 
 
-// Find dofs occuring twice and add up contribution (distribute_local_to_global(...) does not allow the same dof appear twice
+// Find dofs occuring twice and add up contribution (distribute_local_to_global(...) does not allow the same dof appear twice)
 template <int dim>
 void EllipticPressureSolver<dim>::condense_contribution(const std::vector<unsigned int> dofs, const FullMatrix<double> matrix,
 														std::vector<unsigned int>& dofs_red, FullMatrix<double>& matrix_red)
@@ -532,6 +533,7 @@ void EllipticPressureSolver<dim>::condense_contribution(const std::vector<unsign
 }
 
 
+// Calculate and add fracture velocity to velocity object
 template <>
 void EllipticPressureSolver<3>::add_fracture_velocity(VelocityData<3>&, double) const
 {
@@ -720,6 +722,7 @@ void EllipticPressureSolver<3>::output_fracture_pressure() const
 }
 
 
+// Output pressure along fractures to csv file
 template <>
 void EllipticPressureSolver<2>::output_fracture_pressure() const
 {
@@ -755,6 +758,7 @@ void EllipticPressureSolver<2>::output_fracture_pressure() const
 }
 
 
+// Write system matrix entries to file
 template <int dim>
 void EllipticPressureSolver<dim>::output_system_matrix() const
 {

@@ -304,6 +304,7 @@ void PostProcessMM<dim>::solve(Vector<double> residuals)
 }
 
 
+// Retrun weight on face shared by the two cells
 template <int dim>
 double PostProcessMM<dim>::get_weight(CellIterator cell, CellIterator neighbor)
 {

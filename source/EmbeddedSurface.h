@@ -34,6 +34,8 @@ using namespace dealii;
 // Classes for representing embedded surfaces
 
 
+
+// Store intersection data: cells and face information
 template <int dim>
 struct Intersection
 {
@@ -174,6 +176,7 @@ EmbeddedSurface<dim>::EmbeddedSurface(Point<dim> a, Point<dim> b, unsigned int n
 }
 
 
+// Constructor from a parametrization object
 template <int dim>
 EmbeddedSurface<dim>::EmbeddedSurface(FractureParametrization* fracture, double approx_surface_length, unsigned int n)
 :  n_vertices_pre_initialize(n+1), surface_length(approx_surface_length), surface_type(PARAMETRIZATION)
@@ -183,6 +186,7 @@ EmbeddedSurface<dim>::EmbeddedSurface(FractureParametrization* fracture, double 
 }
 
 
+// Represent surface by n segments
 template <int dim>
 void EmbeddedSurface<dim>::linearize(unsigned int n)
 {
@@ -238,6 +242,7 @@ void EmbeddedSurface<dim>::linearize_parametrization(unsigned int n)
 }
 
 
+// Linearize surface based on triangulation and quadrature points, so that there are minimum n_qpoints segments per cell
 template <int dim>
 void EmbeddedSurface<dim>::setup(const Triangulation<dim>& tria, unsigned int n_qpoints)
 {
@@ -248,6 +253,7 @@ void EmbeddedSurface<dim>::setup(const Triangulation<dim>& tria, unsigned int n_
 }
 
 
+// Double number of segments
 template <int dim>
 void EmbeddedSurface<dim>::double_precision()
 {
@@ -530,6 +536,7 @@ Point<dim> EmbeddedSurface<dim>::vertex(unsigned int i) const
 }
 
 
+// Get cell info of segment i
 template <int dim>
 typename EmbeddedSurface<dim>::IndexPair EmbeddedSurface<dim>::get_segment_cell_info(unsigned int i) const
 {
@@ -539,6 +546,7 @@ typename EmbeddedSurface<dim>::IndexPair EmbeddedSurface<dim>::get_segment_cell_
 }
 
 
+// Print surface representation to screen
 template <int dim>
 void EmbeddedSurface<dim>::print_to_screen(const Triangulation<dim>& tria) const
 {
@@ -611,6 +619,7 @@ void EmbeddedSurface<dim>::output_to_vtk(std::string file_base, const Triangulat
 }
 
 
+// Store collection of EmbeddedSurface objects to represent a fractrue network
 class FractureNetwork : public Subscriptor
 {
 public:
@@ -654,6 +663,7 @@ private:
 };
 
 
+// Contruct network for a given problem type
 FractureNetwork::FractureNetwork(ProblemType pt)
 {
 	switch (pt)
@@ -692,6 +702,7 @@ void FractureNetwork::add(FractureParametrization* parametrization, unsigned int
 }
 
 
+// Output fracture network to vtk file
 void FractureNetwork::output_to_vtk(std::string file_base) const
 {
 	unsigned int i = 0;
@@ -711,6 +722,7 @@ void FractureNetwork::init_fractures(const Triangulation<3>&, unsigned int)
 }
 
 
+// Set material_id to one for fractured cells, and iterate fractures to initialize them
 template <>
 void FractureNetwork::init_fractures(const Triangulation<2>& tria, unsigned int n_qpoints)
 {
@@ -733,6 +745,7 @@ void FractureNetwork::init_fractures(const Triangulation<2>& tria, unsigned int 
 }
 
 
+// Load fractures from csv file
 void FractureNetwork::load_fractures(std::string csv_file)
 {
 	std::cout << "Reading fractures from file..." << std::endl;
@@ -776,6 +789,8 @@ void FractureNetwork::print_to_screen(const Triangulation<3>&) const
 	ExcNotImplemented();
 }
 
+
+// Print all fracture representations to screen
 template <>
 void FractureNetwork::print_to_screen(const Triangulation<2>& tria) const
 {
@@ -945,6 +960,7 @@ typename Triangulation<dim>::active_cell_iterator find_active_cell_around_vertex
 }
 
 
+// Check is point is on boundart and return face no
 template <int dim>
 int on_cell_boundary(const typename Triangulation<dim>::active_cell_iterator cell, const Point<dim> p)
 {

@@ -30,7 +30,11 @@
 #include <cfloat>
 
 
-// This file contains problem spesific functions
+/* This file contains problem spesific functions (initial conditions, boundary onditions, rock properties, rhs,...)  for flow, rock, and transport:
+ * ProblemFunctionsFlow
+ * ProblemFunctionsRock
+ * ProblemFunctionsTransport
+*/
 
 
 const double PI = 4*atan(1);

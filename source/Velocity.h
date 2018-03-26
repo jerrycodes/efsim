@@ -39,7 +39,7 @@ using namespace dealii;
 #define VELOCITY_H
 
 
-// Class to store velocity data
+// Class to store velocity data as lowest order Raviart Thomas space
 
 
 template <int dim>
@@ -132,6 +132,7 @@ private:
 };
 
 
+// Populate velocity object with explicit data
 template <int dim>
 void VelocityData<dim>::init_exact(const ProblemFunctionsFlow<dim> flow_fun)
 {
@@ -157,6 +158,7 @@ void VelocityData<dim>::init_exact(const ProblemFunctionsFlow<dim> flow_fun)
 }
 
 
+// Apply constraint so that sum of integrated flux on cell interfaces are equal on non-matching grids)
 template <int dim>
 void VelocityData<dim>::apply_constraints()
 {
@@ -170,6 +172,7 @@ void VelocityData<dim>::apply_constraints()
 
 DEAL_II_NAMESPACE_OPEN
 
+// Override standard deal.II implementation
 template <>
 void ConstraintMatrix::distribute(std::vector<bool> &vec) const
 {
@@ -332,6 +335,7 @@ double VelocityData<3>::calculate_residuals(Vector<double> &,
 	return NaN;
 }
 
+// Calculate residuals in the presence of fractures
 template <>
 double VelocityData<2>::calculate_residuals(Vector<double> &residuals,
 											const ProblemFunctionsFlow<2> flow_fun,
@@ -376,6 +380,7 @@ double VelocityData<2>::calculate_residuals(Vector<double> &residuals,
 }
 
 
+// Calculate flux error (return both L2 norm and the edge norm)
 template <int dim>
 std::pair<double,double> VelocityData<dim>::calculate_flux_error(const RockProperties<dim> rock, TensorFunction<1,dim>* exact_gradient) const
 {
@@ -427,6 +432,7 @@ std::pair<double,double> VelocityData<dim>::calculate_flux_error(const RockPrope
 }
 
 
+// Add piecewise constant flux correction
 template <int dim>
 void VelocityData<dim>::add_correction(const Vector<double> correction)
 {
@@ -505,6 +511,7 @@ Tensor<1,dim+1> VelocityData<dim>::get_value(const typename DoFHandler<dim>::act
 }
 
 
+// Output velocity to vtk file
 template <int dim>
 void VelocityData<dim>::write_to_vtk(std::string file_base)
 {
@@ -535,6 +542,7 @@ void VelocityData<3>::output_fracture_velocity(const FractureNetwork*, double) c
 }
 
 
+// Output velocity along fractures
 template <>
 void VelocityData<2>::output_fracture_velocity(const FractureNetwork* fractures, double width) const
 {
@@ -579,6 +587,7 @@ double VelocityData<dim>::scalar_product(Vector<double> v, Tensor<1,dim,double> 
 }
 
 
+// Convert Vector to Point
 template <int dim>
 Point<dim> VelocityData<dim>::vector_to_point(Vector<double> vec) const
 {

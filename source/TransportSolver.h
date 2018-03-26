@@ -57,7 +57,7 @@
 using namespace dealii;
 
 
-/* Solve advection dominated transport problem with a DG(0) scheme.
+/* Solve advection dominated transport problem with a DG(0) (or equivalently finite volume) scheme.
  * Velocity can be taken from a function or calculated from a pressure solution.
  */
 template<int dim>

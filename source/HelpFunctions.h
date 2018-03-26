@@ -145,6 +145,7 @@ void make_grid (Triangulation<dim>& triangulation,
 }
 
 
+// Create grid for complex fracture network problem
 template <int dim>
 void make_grid_network (Triangulation<dim>& triangulation,
 						int global_refinement = 4)
@@ -174,6 +175,7 @@ void make_grid_network (Triangulation<dim>& triangulation,
 }
 
 
+// Create grid for regular fracture network problem
 template <int dim>
 void make_grid_regular_network(Triangulation<dim>& triangulation, unsigned int N, bool lr = false)
 {
@@ -223,6 +225,7 @@ void make_grid_single_frac(Triangulation<3>&)
 	Assert(false, ExcNotImplemented());
 }
 
+// Make resolved grid for single fracture problem
 template <>
 void make_grid_single_frac(Triangulation<2>& triangulation)
 {
@@ -336,6 +339,7 @@ void make_grid_single_frac(Triangulation<2>& triangulation)
 }
 
 
+// Anisotropic global refinement
 template<int dim>
 void refine_global_anisotropic(Triangulation<dim>& triangulation, int dir)
 {
@@ -347,8 +351,9 @@ void refine_global_anisotropic(Triangulation<dim>& triangulation, int dir)
 	}
 	triangulation.execute_coarsening_and_refinement();
 }
-	
 
+
+// Make 1D grid
 template <int dim>
 void make_grid_1D (Triangulation<dim>& triangulation,
 				   unsigned int refinement = 2,
@@ -387,94 +392,6 @@ void make_grid_1D (Triangulation<dim>& triangulation,
 					cell->face(face)->set_all_boundary_ids(1);
 			}
 		}
-	}
-}
-
-
-template <int dim_st>
-void make_grid_spacetime(Triangulation<dim_st>& triangulation,
-						  std::vector<unsigned int> element_repititions_space,
-						  double t_end,
-						  unsigned int n_time_steps)
-{
-	AssertDimension(element_repititions_space.size(), dim_st-1);
-	Point<dim_st> p0;
-	Point<dim_st> p1;
-	p1(dim_st-1) = t_end;
-	for (unsigned int d=0; d<dim_st-1; ++d)
-		p1(d) = 1.0;
-	element_repititions_space.push_back(n_time_steps);
-	GridGenerator::subdivided_hyper_rectangle(triangulation, element_repititions_space, p0, p1);
-	
-	// Use subdomain_id to identify time slab.
-	// With GridGenerator::subdivided_hyper_rectangle(...), cells are ordered by last dimension (time)
-	unsigned int cells_per_slab = 1;
-	for (unsigned int i=0; i<element_repititions_space.size() -1; ++i)
-		cells_per_slab *= element_repititions_space[i];
-	unsigned int subdomain = 0;
-	unsigned int cell_count = 0;
-	
-	typename Triangulation<dim_st>::cell_iterator
-	cell = triangulation.begin(),
-	endc = triangulation.end();
-	for ( ; cell!=endc; ++cell) {
-		if (cell_count >= cells_per_slab) {
-			++subdomain;
-			cell_count = 0;
-		}
-		cell->set_subdomain_id(subdomain);
-		++cell_count;
-	}
-}
-
-
-template <int dim_st>
-void make_grid_spacetime(Triangulation<dim_st>& triangulation,
-						  unsigned int element_repititions_space,
-						  double t_end,
-						  unsigned int n_time_steps)
-{
-	std::vector<unsigned int> element_repititions(dim_st-1, element_repititions_space);
-	make_grid_spacetime(triangulation, element_repititions, t_end, n_time_steps);
-}
-
-
-template <int dim_st>
-void make_grid_spacetime_network(Triangulation<dim_st>& triangulation,
-								 unsigned int initial_refinement_space,
-								 double t_end,
-								 unsigned int n_time_steps)
-{
-	Assert(dim_st == 3, ExcNotImplemented());
-	Point<dim_st> p0;
-	Point<dim_st> p1;
-	p1[0] = 700;
-	p1[1] = 600;
-	p1(2) = t_end;
-	std::vector<unsigned int> repetitions(3);
-	repetitions[0] = 7 * pow(2,initial_refinement_space);
-	repetitions[1] = 6 * pow(2,initial_refinement_space);
-	repetitions[2] = n_time_steps;
-	GridGenerator::subdivided_hyper_rectangle(triangulation, repetitions, p0, p1);
-	
-	// Use subdomain_id to identify time slab.
-	// With GridGenerator::subdivided_hyper_rectangle(...), cells are ordered by last dimension (time)
-	unsigned int cells_per_slab = 1;
-	for (unsigned int i=0; i<repetitions.size() -1; ++i)
-		cells_per_slab *= repetitions[i];
-	unsigned int subdomain = 0;
-	unsigned int cell_count = 0;
-	
-	typename Triangulation<dim_st>::cell_iterator
-	cell = triangulation.begin(),
-	endc = triangulation.end();
-	for ( ; cell!=endc; ++cell) {
-		if (cell_count >= cells_per_slab) {
-			++subdomain;
-			cell_count = 0;
-		}
-		cell->set_subdomain_id(subdomain);
-		++cell_count;
 	}
 }
 
@@ -599,6 +516,7 @@ void refine_around_fractures(Triangulation<3>&, FractureNetwork, unsigned int, b
 	Assert(false, ExcNotImplemented());
 }
 
+// Refine elements that are cut by fracture
 template <>
 void refine_around_fractures(Triangulation<2>& tria, FractureNetwork fractures, unsigned int ref_cycles, bool ref_neighbors)
 {
@@ -625,6 +543,7 @@ void refine_around_fractures(Triangulation<2>& tria, FractureNetwork fractures, 
 }
 
 
+// Return active neighors sharing at least one vertex
 void get_active_vertex_neighbors(Triangulation<2>::active_cell_iterator cell, std::vector<Triangulation<2>::active_cell_iterator>& active_neighbors)
 {
 	typedef typename Triangulation<2>::active_cell_iterator ACI;
@@ -750,6 +669,7 @@ void make_grid_regular_network_resolved(Triangulation<3>&)
 	Assert(false, ExcNotImplemented());
 }
 
+// Make resolved grid for regular network problem
 template <>
 void make_grid_regular_network_resolved(Triangulation<2>& triangulation)
 {
@@ -829,6 +749,7 @@ void make_grid_regular_network_resolved(Triangulation<2>& triangulation)
 }
 
 
+// Set linear descreasing pressure BCs
 template <int dim>
 void set_linear_pressure_bcs(Triangulation<dim> &tria, ProblemFunctionsFlow<dim> &flow_fun, unsigned int dir = 0, double magnitude = 1.0)
 {
@@ -849,6 +770,7 @@ void set_linear_pressure_bcs(Triangulation<dim> &tria, ProblemFunctionsFlow<dim>
 }
 
 
+// Add well-pair and use no-flow BCs
 template <int dim>
 void set_well_bcs(Triangulation<dim> &tria, ProblemFunctionsFlow<dim> &flow_fun, ProblemFunctionsTransport<dim> &flow_transport)
 {
