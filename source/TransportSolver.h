@@ -502,7 +502,7 @@ void TransportSolver<dim>::assemble_time_dependent_system(const double dt)
 		// TODO: Fix this so that only RightHandSideTransport is needed (include WellConcentration insise value())
 		// If we have a source term (RightHandSideTransport) that is constructed from an analytic
 		// solution, set rhs = 0 here.
-		if (problem_type == ProblemType::SIMPLE_ANALYTIC || problem_type == ProblemType::SANGHYUN) {
+		if (problem_type == ProblemType::SIMPLE_ANALYTIC || problem_type == ProblemType::ANALYTIC) {
 			rhs_minus = 0.0;
 			rhs_plus = 0.0;
 		}
@@ -511,7 +511,7 @@ void TransportSolver<dim>::assemble_time_dependent_system(const double dt)
 
 		system_rhs(cell_dof) += dt*rhs_plus;
 
-		if (problem_type == ProblemType::SIMPLE_ANALYTIC || problem_type == ProblemType::SANGHYUN) {
+		if (problem_type == ProblemType::SIMPLE_ANALYTIC || problem_type == ProblemType::ANALYTIC) {
 			// Add time dependent source
 			double rhs_int = 0.0;
 			for (unsigned int q=0; q<nq; ++q) {
@@ -567,8 +567,8 @@ void TransportSolver<dim>::init_qoi_file()
 		case SIMPLE_FRAC_RESOLVED:
 			header = "Time\tFlux Out\tAccumulated";
 			break;
-		case FLEMISCH:
-		case FLEMISCH_RESOLVED:
+		case REGULAR_NETWORK:
+		case REGULAR_NETWORK_RESOLVED:
 			header = "Time\tFlux out (y=0.5)\tFlux out (y=0.75)";
 			break;
 		default:
@@ -580,7 +580,7 @@ void TransportSolver<dim>::init_qoi_file()
 	ofs.close();
 	
 	// Find cells on fracture outflow for resolved Flemisch case
-	if (problem_type == FLEMISCH_RESOLVED) {
+	if (problem_type == REGULAR_NETWORK_RESOLVED) {
 		const unsigned int face = 1;
 		const double half_width = 1e-4/2.0;
 		typename DoFHandler<dim>::active_cell_iterator
@@ -633,7 +633,7 @@ void TransportSolver<dim>::calculate_qoi(const double dt)
 			break;
 		}
 		
-		case FLEMISCH:
+		case REGULAR_NETWORK:
 		{
 			Assert(dim == 2, ExcNotImplemented());
 			
@@ -668,7 +668,7 @@ void TransportSolver<dim>::calculate_qoi(const double dt)
 			break;
 		}
 		
-		case FLEMISCH_RESOLVED:
+		case REGULAR_NETWORK_RESOLVED:
 		{
 			Assert(dim == 2, ExcNotImplemented());
 			typedef typename DoFHandler<dim>::active_cell_iterator ACI;

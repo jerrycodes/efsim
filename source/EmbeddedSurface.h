@@ -667,7 +667,7 @@ FractureNetwork::FractureNetwork(ProblemType pt)
 			//add(new FractureArc(Point<2>(1.0,3.0/20.0), 13.0/20.0, acos(-12.0/13.0), PI/2.0), 15);
 			//add(new FractureArc(Point<2>(1.0,11.0/10.0), sqrt(85)/10.0, 2*PI-acos(-6.0/sqrt(85)), 2*PI-acos(-2.0/sqrt(85))), 10);
 			break;
-		case FLEMISCH:
+		case REGULAR_NETWORK:
 			add(EmbeddedSurface<2>(Point<2>(0.0,0.5), Point<2>(1.0,0.5)));
 			add(EmbeddedSurface<2>(Point<2>(0.5,0.0), Point<2>(0.5,1.0)));
 			add(EmbeddedSurface<2>(Point<2>(0.5,0.75), Point<2>(1.0,0.75)));
@@ -677,16 +677,6 @@ FractureNetwork::FractureNetwork(ProblemType pt)
 			break;
 		case COMPLEX_NETWORK:
 			load_fractures("network.csv");
-			break;
-		case FRACTURE_TEST:
-			add(EmbeddedSurface<2>(Point<2>(0.0,0.5), Point<2>(1.0,0.5)));
-			break;
-		case FRACTURE_INCLINED:
-			add(EmbeddedSurface<2>(Point<2>(0.0,1.0/3.0), Point<2>(1.0,2.0/3.0)));
-			break;
-		case FRACTURE_ANGLE:
-			add(EmbeddedSurface<2>(Point<2>(0.0,1.0/5.0), Point<2>(0.5,0.5)));
-			add(EmbeddedSurface<2>(Point<2>(0.5,0.5), Point<2>(0.0,4.0/5.0)));
 			break;
 		default:
 			// do nothing

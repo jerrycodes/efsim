@@ -32,7 +32,7 @@ int main (int argc, char *argv[])
 	Utilities::MPI::MPI_InitFinalize mpi_initialization (argc, argv);
 	const int dim = 2;
 
-	const ProblemType pt = ProblemType::SANGHYUN;
+	const ProblemType pt = ProblemType::ANALYTIC;
 	const bool local_refinement = false;
 	const double dirichlet_penalty = 100.0;
 	const int n_qpoints = 2;

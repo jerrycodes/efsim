@@ -45,7 +45,7 @@ int main()
   {
 	  // Problem spesific parameters
 	  const int dim = 2;
-	  const ProblemType pt = ProblemType::SANGHYUN;
+	  const ProblemType pt = ProblemType::ANALYTIC;
 	  const int last_refinement = 5;
 	  const double dt = 0.05;
 	  const double norm_tol = 1e-10;

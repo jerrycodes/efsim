@@ -79,11 +79,11 @@ int main (int argc, char *argv[])
 	
 	// Make grid
 	Triangulation<dim> tria;
-	if (pt == FLEMISCH) {
-		make_grid_flemisch(tria, Nx, n_ref_around_fractures>0);
+	if (pt == REGULAR_NETWORK) {
+		make_grid_regular_network(tria, Nx, n_ref_around_fractures>0);
 	}
-	else if (pt == FLEMISCH_RESOLVED) {
-		make_grid_flemisch_resolved(tria);
+	else if (pt == REGULAR_NETWORK_RESOLVED) {
+		make_grid_regular_network_resolved(tria);
 	}
 	else if (pt == SIMPLE_FRAC_RESOLVED)
 		make_grid_single_frac(tria);
@@ -193,8 +193,8 @@ int main (int argc, char *argv[])
 		print_header("Transport Solver (DG(0) + IE)");
 		transport_solver.run(dt, T, velocity);
 		
-		if (pt == FLEMISCH_RESOLVED) {
-			FractureNetwork fractures_tmp(FLEMISCH);
+		if (pt == REGULAR_NETWORK_RESOLVED) {
+			FractureNetwork fractures_tmp(REGULAR_NETWORK);
 			fractures_tmp.init_fractures(tria);
 			transport_solver.set_fractures(fractures_tmp, fracture_width);
 			transport_solver.output_fracture_solution();

@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
 	deallog.depth_console(0);
 	Utilities::MPI::MPI_InitFinalize mpi_initialization (argc, argv);
 
-	const ProblemType pt = ProblemType::SANGHYUN;
+	const ProblemType pt = ProblemType::ANALYTIC;
 
 	const int dim = 2;
 	Triangulation<dim> triangulation;

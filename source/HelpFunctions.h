@@ -175,7 +175,7 @@ void make_grid_network (Triangulation<dim>& triangulation,
 
 
 template <int dim>
-void make_grid_flemisch(Triangulation<dim>& triangulation, unsigned int N, bool lr = false)
+void make_grid_regular_network(Triangulation<dim>& triangulation, unsigned int N, bool lr = false)
 {
 	Assert(dim == 2, ExcNotImplemented());
 	
@@ -742,16 +742,16 @@ void refine_around_close_fractures(Triangulation<2>& tria, FractureNetwork fract
 
 
 template <int dim>
-void make_grid_flemisch_resolved(Triangulation<dim>& triangulation);
+void make_grid_regular_network_resolved(Triangulation<dim>& triangulation);
 
 template <>
-void make_grid_flemisch_resolved(Triangulation<3>&)
+void make_grid_regular_network_resolved(Triangulation<3>&)
 {
 	Assert(false, ExcNotImplemented());
 }
 
 template <>
-void make_grid_flemisch_resolved(Triangulation<2>& triangulation)
+void make_grid_regular_network_resolved(Triangulation<2>& triangulation)
 {
 	const double w = 1e-4;
 	const unsigned int N1 = 78;
@@ -781,7 +781,7 @@ void make_grid_flemisch_resolved(Triangulation<2>& triangulation)
 	GridGenerator::subdivided_hyper_rectangle(triangulation, step_sizes, Point<2>(0.0, 0.0), Point<2>(1.0,1.0), false);
 	
 	// Set pressure boundary conditions
-	std::vector<unsigned int> boundary_ids = get_boundary_id(FLEMISCH_RESOLVED);
+	std::vector<unsigned int> boundary_ids = get_boundary_id(REGULAR_NETWORK_RESOLVED);
 	for (typename Triangulation<2>::active_cell_iterator cell = triangulation.begin_active(); cell != triangulation.end(); ++cell) {
 		for (unsigned int f=0; f<GeometryInfo<2>::faces_per_cell; ++f) {
 			if (cell->at_boundary(f))
@@ -824,7 +824,7 @@ void make_grid_flemisch_resolved(Triangulation<2>& triangulation)
 	
 	std::cout << "Min h: " << GridTools::minimal_cell_diameter(triangulation) << std::endl;
 	
-	//FractureNetwork fractures(FLEMISCH);
+	//FractureNetwork fractures(REGULAR_NETWORK);
 	//refine_around_fractures(triangulation, fractures, 6, false);
 }
 

@@ -194,17 +194,17 @@ void CoupledFlowTransport<dim>::setup()
 	}
 	else {
 		// TODO: Use get_boundary_id(ProblemType) instead of declaring boundaries in make_grid functions
-		if (problem_type == FLEMISCH) {
+		if (problem_type == REGULAR_NETWORK) {
 			if (param->get_bool("Do local refinement")) {
-				make_grid_flemisch(triangulation, 16, true);
-				FractureNetwork fractures_tmp(FLEMISCH);
+				make_grid_regular_network(triangulation, 16, true);
+				FractureNetwork fractures_tmp(REGULAR_NETWORK);
 				refine_around_fractures(triangulation, fractures_tmp, 4);
 			}
 			else
-				make_grid_flemisch(triangulation, 37);
+				make_grid_regular_network(triangulation, 37);
 		}
-		else if (problem_type == FLEMISCH_RESOLVED)
-			make_grid_flemisch_resolved(triangulation);
+		else if (problem_type == REGULAR_NETWORK_RESOLVED)
+			make_grid_regular_network_resolved(triangulation);
 		else if (problem_type == SIMPLE_FRAC_RESOLVED)
 			make_grid_single_frac(triangulation);
 		else

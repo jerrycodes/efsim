@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
 	deallog.depth_console (0);
 	Utilities::MPI::MPI_InitFinalize mpi_initialization (argc, argv);
 
-	const ProblemType pt = ProblemType::SANGHYUN;
+	const ProblemType pt = ProblemType::ANALYTIC;
 
 	const double norm_tol = 1e-10;
 	const double reference_l2_norm = 0.0019316371905745935867;

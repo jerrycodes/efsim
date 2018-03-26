@@ -35,7 +35,9 @@
 
 const double PI = 4*atan(1);
 
-enum ProblemType { VTK, SIMPLE_ANALYTIC, LOWPERM_REGION, SANGHYUN, SANGHYUN_STEADYP, BITMAP, SINGULAR, ONED, CHANNEL, PEAK, FRONT, HAT, BURMAN, FRACTURE_ANALYTIC, FRACTURE_ANGLE, FLEMISCH, FLEMISCH_RESOLVED, SIMPLE_FRAC, SIMPLE_FRAC_RESOLVED, COMPLEX_NETWORK, FRACTURE_TEST, FRACTURE_INCLINED };
+// List of valid problems
+enum ProblemType { VTK, SIMPLE_ANALYTIC, LOWPERM_REGION, ANALYTIC, ANALYTIC_STEADYP, BITMAP, ONED, CHANNEL, 
+	               FRACTURE_ANALYTIC, REGULAR_NETWORK, REGULAR_NETWORK_RESOLVED, SIMPLE_FRAC, SIMPLE_FRAC_RESOLVED, COMPLEX_NETWORK };
 
 // Get function to retrive ProblemType from ParameterHandler
 ProblemType getProblemType(ParameterHandler& prm,
@@ -50,47 +52,30 @@ ProblemType getProblemType(ParameterHandler& prm,
 		pt = ProblemType::LOWPERM_REGION;
 	else if (problem == "SIMPLE_ANALYTIC")
 		pt = ProblemType::SIMPLE_ANALYTIC;
-	else if (problem == "SANGHYUN")
-		pt = ProblemType::SANGHYUN;
-	else if (problem == "SANGHYUN_STEADYP")
-		pt = ProblemType::SANGHYUN_STEADYP;
+	else if (problem == "ANALYTIC")
+		pt = ProblemType::ANALYTIC;
+	else if (problem == "ANALYTIC_STEADYP")
+		pt = ProblemType::ANALYTIC_STEADYP;
 	else if (problem == "BITMAP")
 		pt = ProblemType::BITMAP;
-	else if (problem == "SINGULAR")
-		pt = ProblemType::SINGULAR;
 	else if (problem == "ONED")
 		pt = ProblemType::ONED;
 	else if (problem == "CHANNEL")
 		pt = ProblemType::CHANNEL;
-	else if (problem == "PEAK")
-		pt = ProblemType::PEAK;
-	else if (problem == "FRONT")
-		pt = ProblemType::FRONT;
-	else if (problem == "HAT")
-		pt = ProblemType::HAT;
-	else if (problem == "BURMAN")
-		pt = ProblemType::BURMAN;
 	else if (problem == "FRACTURE_ANALYTIC")
 		pt = ProblemType::FRACTURE_ANALYTIC;
-	else if (problem == "FLEMISCH")
-		pt = ProblemType::FLEMISCH;
-	else if (problem == "FLEMISCH_RESOLVED")
-		pt = ProblemType::FLEMISCH_RESOLVED;
+	else if (problem == "REGULAR_NETWORK")
+		pt = ProblemType::REGULAR_NETWORK;
+	else if (problem == "REGULAR_NETWORK_RESOLVED")
+		pt = ProblemType::REGULAR_NETWORK_RESOLVED;
 	else if (problem == "SIMPLE_FRAC")
 		pt = ProblemType::SIMPLE_FRAC;
 	else if (problem == "COMPLEX_NETWORK")
 		pt = ProblemType::COMPLEX_NETWORK;
 	else if (problem == "SIMPLE_FRAC_RESOLVED")
 		pt = ProblemType::SIMPLE_FRAC_RESOLVED;
-	else if (problem == "FRACTURE_TEST")
-		pt = ProblemType::FRACTURE_TEST;
-	else if (problem == "FRACTURE_INCLINED")
-		pt = ProblemType::FRACTURE_INCLINED;
-	else if (problem == "FRACTURE_ANGLE")
-		pt = ProblemType::FRACTURE_ANGLE;
 	else {
-		std::cout << "Warning: Field 'ProblemType' from input is not recognized.\n"
-				  << "         Should be either LOWPERM_REGION, SIMPLE_ANALYTIC, BITMAP, CHANNEL, PEAK, FRONT, HAT, FRACUTRE_TEST, FRACTURE_INCLINED, FRACTURE_ANGLE, FRACTURE_ANALYTIC, FLEMISCH, FLEMISCH_RESOLVED, SIMPLE_FRAC, SIMPLE_FRAC_RESOLVED, COMPLEX_NETWORK, SINGULAR, BURMAN, SANGHYUN, or SANGHYUN_STEADYP.\n"
+		std::cout << "Warning: Field 'ProblemType' from input is not recognized (see ProblemFunctions.h for valid options).\n"
 				  << "         Using default: LOWPERM_REGION.\n";
 		pt = ProblemType::LOWPERM_REGION;
 	}
@@ -133,25 +118,25 @@ double ExactPressure<2,SIMPLE_ANALYTIC>::value(const Point<2> &p, const unsigned
 }
 
 template <>
-double ExactPressure<2,SANGHYUN>::value(const Point<2> &p, const unsigned int /*component*/) const
+double ExactPressure<2,ANALYTIC>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	return std::cos(this->get_time() + p(0) - p(1));
 }
 
 template <>
-double ExactPressure<3,SANGHYUN>::value(const Point<3> &p, const unsigned int /*component*/) const
+double ExactPressure<3,ANALYTIC>::value(const Point<3> &p, const unsigned int /*component*/) const
 {
 	return std::cos(this->get_time() + p(0) - p(1) + p(2));
 }
 
 template <>
-double ExactPressure<2,SANGHYUN_STEADYP>::value(const Point<2> &p, const unsigned int /*component*/) const
+double ExactPressure<2,ANALYTIC_STEADYP>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	return std::cos(p(0) - p(1));
 }
 
 template <>
-double ExactPressure<3,SANGHYUN_STEADYP>::value(const Point<3> &p, const unsigned int /*component*/) const
+double ExactPressure<3,ANALYTIC_STEADYP>::value(const Point<3> &p, const unsigned int /*component*/) const
 {
 	return std::cos(p(0) - p(1) + p(2));
 }
@@ -168,28 +153,6 @@ double ExactPressure<2,FRACTURE_ANALYTIC>::value(const Point<2> &p, const unsign
 		return (4-4*e) * (log(r)-5.0/4.0) / 5.0 + 1.0;
 }
 
-template <>
-double ExactPressure<2,PEAK>::value(const Point<2> &p, const unsigned int /*component*/) const
-{
-	return 2 - p(0) - p(1);
-}
-
-template <>
-double ExactPressure<2,FRACTURE_INCLINED>::value(const Point<2> &p, const unsigned int /*component*/) const
-{
-	return sqrt(10.0)/10.0 * (11.0/3.0 - 3.0*p[0] - p[1]);
-}
-
-template <>
-double ExactPressure<2,FRACTURE_ANGLE>::value(const Point<2> &p, const unsigned int /*component*/) const
-{
-	const double b = sqrt(34)/10;
-	const double a = 4.0/3.0*b;
-	if (p[1] < 0.5)
-		return a - b*p[0] - 5.0/3.0*b*p[1];
-	else
-		return a + b*(p[0]-0.5) - 5.0/3.0*b*(p[1]-3.0/10.0);
-}
 
 
 /////////////////////////////////////
@@ -249,8 +212,6 @@ LinearDecreasing<dim>::LinearDecreasing(int dir, double coord_min, double coord_
 	Assert(direction < dim, ExcInternalError());
 }
 
-
-
 template <int dim>
 double LinearDecreasing<dim>::value(const Point<dim> &p, const unsigned int /*component*/) const
 {
@@ -297,7 +258,7 @@ Tensor<1,2> ExactGradient<2,SIMPLE_ANALYTIC>::value(const Point<2> &p) const
 }
 
 template <>
-Tensor<1,2> ExactGradient<2,SANGHYUN>::value(const Point<2> &p) const
+Tensor<1,2> ExactGradient<2,ANALYTIC>::value(const Point<2> &p) const
 {
 	Tensor<1,2> return_value;
 	const double comp = std::sin(this->get_time() + p(0) - p(1));
@@ -307,7 +268,7 @@ Tensor<1,2> ExactGradient<2,SANGHYUN>::value(const Point<2> &p) const
 }
 
 template <>
-Tensor<1,3> ExactGradient<3,SANGHYUN>::value(const Point<3> &p) const
+Tensor<1,3> ExactGradient<3,ANALYTIC>::value(const Point<3> &p) const
 {
 	Tensor<1,3> return_value;
 	const double comp = std::sin(this->get_time() + p(0) - p(1) + p(2));
@@ -318,7 +279,7 @@ Tensor<1,3> ExactGradient<3,SANGHYUN>::value(const Point<3> &p) const
 }
 
 template <>
-Tensor<1,2> ExactGradient<2,SANGHYUN_STEADYP>::value(const Point<2> &p) const
+Tensor<1,2> ExactGradient<2,ANALYTIC_STEADYP>::value(const Point<2> &p) const
 {
 	Tensor<1,2> return_value;
 	const double comp = std::sin(p(0) - p(1));
@@ -328,39 +289,13 @@ Tensor<1,2> ExactGradient<2,SANGHYUN_STEADYP>::value(const Point<2> &p) const
 }
 
 template <>
-Tensor<1,3> ExactGradient<3,SANGHYUN_STEADYP>::value(const Point<3> &p) const
+Tensor<1,3> ExactGradient<3,ANALYTIC_STEADYP>::value(const Point<3> &p) const
 {
 	Tensor<1,3> return_value;
 	const double comp = std::sin(p(0) - p(1) + p(2));
 	return_value[0] = -comp;
 	return_value[1] =  comp;
 	return_value[2] = -comp;
-	return return_value;
-}
-
-template <>
-Tensor<1,2> ExactGradient<2,PEAK>::value(const Point<2> &/*p*/) const
-{
-	Tensor<1,2> return_value;
-	return_value[0] = -1.0;
-	return_value[1] = -1.0;
-	return return_value;
-}
-
-template <>
-Tensor<1,1> ExactGradient<1,FRONT>::value(const Point<1> &/*p*/) const
-{
-	Tensor<1,1> return_value;
-	return_value[0] = -1.0;
-	return return_value;
-}
-
-template <>
-Tensor<1,2> ExactGradient<2,FRONT>::value(const Point<2> &/*p*/) const
-{
-	Tensor<1,2> return_value;
-	return_value[0] = -1.0;
-	return_value[1] = 0.0;
 	return return_value;
 }
 
@@ -378,36 +313,6 @@ Tensor<1,2> ExactGradient<2,FRACTURE_ANALYTIC>::value(const Point<2> &p) const
 		factor = (4.0-4.0*e) / (5.0*r*r);
 
 	return factor * p;
-}
-
-template <>
-Tensor<1,2> ExactGradient<2,FRACTURE_TEST>::value(const Point<2> &p) const
-{
-	Tensor<1,2> return_value;
-	return_value[1] = p(1) > 0.5 ? 1.0 : -1.0;
-	return return_value;
-}
-
-template <>
-Tensor<1,2> ExactGradient<2,FRACTURE_INCLINED>::value(const Point<2> &p) const
-{
-	Tensor<1,2> return_value;
-	return_value[0] = -1.0/sqrt(5.0);
-	return_value[1] = 2.0/sqrt(5.0);
-	if (p[1] < 1.0/3.0*(1+p[0]))
-		return_value *= -1.0;
-	return return_value;
-}
-
-template <>
-Tensor<1,2> ExactGradient<2,FRACTURE_ANGLE>::value(const Point<2> &p) const
-{
-	Tensor<1,2> return_value;
-	return_value[0] = -0.0;
-	return_value[1] = -1.0;
-	if ( p[1] > 1.0/5.0*(1.0+3.0*p[0]) && p[1] < 1.0/5.0*(4.0-3.0*p[0]) )
-		return_value = 0.0;
-	return return_value;
 }
 
 
@@ -449,25 +354,25 @@ double RightHandSide<2,SIMPLE_ANALYTIC>::value(const Point<2> &p, const unsigned
 }
 
 template <>
-double RightHandSide<2,SANGHYUN>::value(const Point<2> &p, const unsigned int /*component*/) const
+double RightHandSide<2,ANALYTIC>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	return 2*cos(this->get_time() + p(0) - p(1)) - sin(this->get_time() + p(0) - p(1));
 }
 
 template <>
-double RightHandSide<3,SANGHYUN>::value(const Point<3> &p, const unsigned int /*component*/) const
+double RightHandSide<3,ANALYTIC>::value(const Point<3> &p, const unsigned int /*component*/) const
 {
 	return 3*cos(this->get_time() + p(0) - p(1) + p(2)) - sin(this->get_time() + p(0) - p(1) + p(2));
 }
 
 template <>
-double RightHandSide<2,SANGHYUN_STEADYP>::value(const Point<2> &p, const unsigned int /*component*/) const
+double RightHandSide<2,ANALYTIC_STEADYP>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	return 2*cos(p(0) - p(1));
 }
 
 template <>
-double RightHandSide<3,SANGHYUN_STEADYP>::value(const Point<3> &p, const unsigned int /*component*/) const
+double RightHandSide<3,ANALYTIC_STEADYP>::value(const Point<3> &p, const unsigned int /*component*/) const
 {
 	return 3*cos(p(0) - p(1) + p(2));
 }
@@ -588,23 +493,7 @@ Tensor<2,2> PermeabilityTensor<2,CHANNEL>::value(const Point<2> &p) const
 }
 
 template<>
-Tensor<2,2> PermeabilityTensor<2,SINGULAR>::value(const Point<2> &p) const
-{
-	Tensor<2,2> return_tensor;
-	double k = 1.0;
-	double x = p(0);
-	double y = p(1);
-	if (x < 0.5 && y < 0.5)
-		k = 1000.0;
-	else if (x > 0.5 && y > 0.5)
-		k = 1000.0;
-	for (int i=0; i<2; ++i)
-		return_tensor[i][i] = k;
-	return return_tensor;
-}
-
-template<>
-Tensor<2,2> PermeabilityTensor<2,FLEMISCH_RESOLVED>::value(const Point<2> &p) const
+Tensor<2,2> PermeabilityTensor<2,REGULAR_NETWORK_RESOLVED>::value(const Point<2> &p) const
 {
 	const double w = 1e-4;
 	const double k_frac = 1e4;
@@ -651,6 +540,7 @@ Tensor<2,dim> IdentityTensorFunction<dim>::value(const Point<dim> & /*p*/) const
 	return return_tensor;
 }
 
+
 /////////////////////////////////////
 // Neumann
 /////////////////////////////////////
@@ -670,7 +560,7 @@ double Neumann<dim,pt>::value(const Point<dim> & /*p*/, const unsigned int /*com
 }
 
 template <>
-double Neumann<2,SANGHYUN>::value(const Point<2> &p, const unsigned int /*component*/) const
+double Neumann<2,ANALYTIC>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	const double x = p(0);
 	const double y = p(1);
@@ -688,7 +578,7 @@ double Neumann<2,SANGHYUN>::value(const Point<2> &p, const unsigned int /*compon
 }
 
 template <>
-double Neumann<3,SANGHYUN>::value(const Point<3> &p, const unsigned int /*component*/) const
+double Neumann<3,ANALYTIC>::value(const Point<3> &p, const unsigned int /*component*/) const
 {
 	const double x = p(0);
 	const double y = p(1);
@@ -711,7 +601,7 @@ double Neumann<3,SANGHYUN>::value(const Point<3> &p, const unsigned int /*compon
 }
 
 template <>
-double Neumann<2,SANGHYUN_STEADYP>::value(const Point<2> &p, const unsigned int /*component*/) const
+double Neumann<2,ANALYTIC_STEADYP>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	const double x = p(0);
 	const double y = p(1);
@@ -728,7 +618,7 @@ double Neumann<2,SANGHYUN_STEADYP>::value(const Point<2> &p, const unsigned int 
 }
 
 template <>
-double Neumann<3,SANGHYUN_STEADYP>::value(const Point<3> &p, const unsigned int /*component*/) const
+double Neumann<3,ANALYTIC_STEADYP>::value(const Point<3> &p, const unsigned int /*component*/) const
 {
 	const double x = p(0);
 	const double y = p(1);
@@ -768,53 +658,7 @@ double Neumann<2,SIMPLE_ANALYTIC>::value(const Point<2> &p, const unsigned int /
 }
 
 template <>
-double Neumann<2,PEAK>::value(const Point<2> &p, const unsigned int /*component*/) const
-{
-	const double x = p(0);
-	const double y = p(1);
-	if ( y == 1.0 ) // Top
-		return 1.0;
-	else if (y == 0.0) // Bottom
-		return -1.0;
-	else if (x == 0.0)  // Left
-		return -1.0;
-	else if (x == 1.0) // Right
-		return 1.0;
-	Assert(false, ExcMessage("Should not need Neumann conditions away from boundary."));
-	return 0.0;
-}
-
-template <>
-double Neumann<1,FRONT>::value(const Point<1> &p, const unsigned int /*component*/) const
-{
-	const double x = p(0);
-	if (x == 0.0)  // Left
-		return -1.0;
-	else if (x == 1.0) // Right
-		return 1.0;
-	Assert(false, ExcMessage("Should not need Neumann conditions away from boundary."));
-	return 0.0;
-}
-
-template <>
-double Neumann<2,FRONT>::value(const Point<2> &p, const unsigned int /*component*/) const
-{
-	const double x = p(0);
-	const double y = p(1);
-	if ( y == 1.0 ) // Top
-		return 0.0;
-	else if (y == 0.0) // Bottom
-		return 0.0;
-	else if (x == 0.0)  // Left
-		return -1.0;
-	else if (x == 1.0) // Right
-		return 1.0;
-	Assert(false, ExcMessage("Should not need Neumann conditions away from boundary."));
-	return 0.0;
-}
-
-template <>
-double Neumann<2,FLEMISCH>::value(const Point<2> &p, const unsigned int /*component*/) const
+double Neumann<2,REGULAR_NETWORK>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	const double x = p(0);
 	if (x == 0.0) // Left
@@ -822,78 +666,6 @@ double Neumann<2,FLEMISCH>::value(const Point<2> &p, const unsigned int /*compon
 	return 0.0;
 }
 
-
-// PEAK function
-double peak_fun(const Point<2> p)
-{
-	const Point<2> center(0.25, 0.25);
-	const double dist = p.distance(center);
-	if (dist <= 0.125)
-		return 1.0;
-	else if (dist >= 0.25)
-		return 0.0;
-	else
-		return 1024*pow(dist,3) - 576*pow(dist,2) + 96*dist - 4.0;
-}
-
-double peak_fun(const Point<1> p)
-{
-	const double a = 0.1;
-	const double b = 1.0;
-	const double x = p(0);
-	if (x<=-a || x>= a)
-		return 0.0;
-	return b/2.0 * ( cos(PI/a*x) + 1.0 );
-}
-
-
-// FRONT function
-template <int dim>
-double front_fun(const Point<dim> p)
-{
-	Assert((dim>=1) && (dim<=2), ExcNotImplemented());
-	const double a = 0.0;
-	const double x = p(0);
-	if (x <= 0)
-		return 1.0;
-	else if (x > a)
-		return 0.0;
-	else
-		return 2*pow(x/a,3) - 3*pow(x/a,2) + 1.0;
-}
-
-
-// HAT function
-template <int dim>
-double hat_fun(const Point<dim> p)
-{
-	Assert((dim>=1) && (dim<=2), ExcNotImplemented());
-	const double a = 0.1;
-	const double b = 1.0;
-	const double x = p(0);
-	if (x<=-a)
-		return 0.0;
-	else if (x<=0)
-		return b*x/a + b;
-	else if (x<=a)
-		return -b*x/a + b;
-	else
-		return 0.0;
-}
-
-
-// Cone function
-double cone_fun(const Point<2> p)
-{
-	const Point<2> center(0.75, 0.75);
-	const double radius = 0.05;
-	const double height = 3.0 / (PI*radius*radius);
-	const double dist = p.distance(center);
-	if (dist >= radius)
-		return 0.0;
-	else
-		return height * (1.0 - dist/radius);
-}
 
 
 /////////////////////////////////////
@@ -916,14 +688,14 @@ double ExactConcentration<dim,pt>::value(const Point<dim> & /*p*/, const unsigne
 }
 
 template <>
-double ExactConcentration<2,SANGHYUN>::value(const Point<2> &p, const unsigned int /*component*/) const
+double ExactConcentration<2,ANALYTIC>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	const double t = this->get_time();
 	return std::sin(t + p(0) - p(1));
 }
 
 template <>
-double ExactConcentration<3,SANGHYUN>::value(const Point<3> &p, const unsigned int /*component*/) const
+double ExactConcentration<3,ANALYTIC>::value(const Point<3> &p, const unsigned int /*component*/) const
 {
 	const double t = this->get_time();
 	return std::sin(t + p(0) - p(1) + p(2));
@@ -943,35 +715,6 @@ double ExactConcentration<2,ONED>::value(const Point<2> &p, const unsigned int /
 	return sin(t + p(0) - p(1));
 }
 
-template <>
-double ExactConcentration<2,PEAK>::value(const Point<2> &p, const unsigned int /*component*/) const
-{
-	const double t = this->get_time();
-	const Point<2> u(1.0, 1.0);
-	Point<2> p_shift(p);
-	p_shift -= t*u;
-	return peak_fun(p_shift);
-}
-
-template <>
-double ExactConcentration<1,FRONT>::value(const Point<1> &p, const unsigned int /*component*/) const
-{
-	const double t = this->get_time();
-	const Point<1> u(1.0);
-	Point<1> p_shift(p);
-	p_shift -= t*u;
-	return front_fun(p_shift);
-}
-
-template <>
-double ExactConcentration<2,FRONT>::value(const Point<2> &p, const unsigned int /*component*/) const
-{
-	const double t = this->get_time();
-	const Point<2> u(1.0, 0.0);
-	Point<2> p_shift(p);
-	p_shift -= t*u;
-	return front_fun(p_shift);
-}
 
 
 /////////////////////////////////////
@@ -993,7 +736,7 @@ double RightHandSideTransport<dim,pt>::value(const Point<dim> & /*p*/, const uns
 }
 
 template <>
-double RightHandSideTransport<2,SANGHYUN>::value(const Point<2> &p, const unsigned int /*component*/) const
+double RightHandSideTransport<2,ANALYTIC>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	const double t = this->get_time();
 	const double x = p(0);
@@ -1002,7 +745,7 @@ double RightHandSideTransport<2,SANGHYUN>::value(const Point<2> &p, const unsign
 }
 
 template <>
-double RightHandSideTransport<3,SANGHYUN>::value(const Point<3> &p, const unsigned int /*component*/) const
+double RightHandSideTransport<3,ANALYTIC>::value(const Point<3> &p, const unsigned int /*component*/) const
 {
 	const double t = this->get_time();
 	const double x = p(0);
@@ -1054,15 +797,6 @@ double BoundaryConcentration<2,CHANNEL>::value(const Point<2> &p, const unsigned
 	return inflow_conc * val;
 }
 
-template <>
-double BoundaryConcentration<2,FRACTURE_ANGLE>::value(const Point<2> &p, const unsigned int /*component*/) const
-{
-	if (p[0] == 1.0)
-		return 0.0;
-	else
-		return inflow_conc;
-}
-
 
 /////////////////////////////////////
 // WellConcentration
@@ -1083,22 +817,22 @@ double WellConcentration<dim,pt>::value(const Point<dim> &/*p*/, const unsigned 
 }
 
 template <>
-double WellConcentration<2,SANGHYUN_STEADYP>::value(const Point<2> &p, const unsigned int /*component*/) const
+double WellConcentration<2,ANALYTIC_STEADYP>::value(const Point<2> &p, const unsigned int /*component*/) const
 {
 	const double t = this->get_time();
 	if ( t > 0.105)
-		Assert(false, ExcMessage("The example case SANGHYUN_STEADYP does only work for t ~< 0.1."));
+		Assert(false, ExcMessage("The example case ANALYTIC_STEADYP does only work for t ~< 0.1."));
 	const double x = p(0);
 	const double y = p(1);
 	return cos(t+x-y)/(2*cos(x-y)) + sin(t+x-y) + tan(x-y)*cos(t+x-y);
 }
 
 template <>
-double WellConcentration<3,SANGHYUN_STEADYP>::value(const Point<3> &p, const unsigned int /*component*/) const
+double WellConcentration<3,ANALYTIC_STEADYP>::value(const Point<3> &p, const unsigned int /*component*/) const
 {
 	const double t = this->get_time();
 	if ( t > 0.105)
-		Assert(false, ExcMessage("The example case SANGHYUN_STEADYP does only work for t ~< 0.1."));
+		Assert(false, ExcMessage("The example case ANALYTIC_STEADYP does only work for t ~< 0.1."));
 	const double x = p(0);
 	const double y = p(1);
 	const double z = p(2);
@@ -1136,7 +870,7 @@ double DivVelocity<dim,pt>::value(const Point<dim> & /*p*/, const unsigned int /
 }
 
 template <>
-double DivVelocity<2,SANGHYUN_STEADYP>::value(const Point<2> & p, const unsigned int /*component*/) const
+double DivVelocity<2,ANALYTIC_STEADYP>::value(const Point<2> & p, const unsigned int /*component*/) const
 {
 	return 2*cos(p(0)-p(1));
 }
@@ -1270,35 +1004,22 @@ void ProblemFunctionsFlow<dim>::set_problem(ProblemType pt)
 			dirichlet        = exact_pressure;
 			neumann          = new Neumann<dim,ONED>();
 			break;
-		case SANGHYUN:
+		case ANALYTIC:
 			analytic = true;
-			exact_pressure   = new ExactPressure<dim,SANGHYUN>();
-			initial_pressure = new ExactPressure<dim,SANGHYUN>();
-			exact_gradient   = new ExactGradient<dim,SANGHYUN>();
-			right_hand_side  = new RightHandSide<dim,SANGHYUN>();
+			exact_pressure   = new ExactPressure<dim,ANALYTIC>();
+			initial_pressure = new ExactPressure<dim,ANALYTIC>();
+			exact_gradient   = new ExactGradient<dim,ANALYTIC>();
+			right_hand_side  = new RightHandSide<dim,ANALYTIC>();
 			dirichlet        = exact_pressure;
-			neumann          = new Neumann<dim,SANGHYUN>();
+			neumann          = new Neumann<dim,ANALYTIC>();
 			break;
-		case SANGHYUN_STEADYP:
+		case ANALYTIC_STEADYP:
 			analytic = true;
-			exact_pressure   = new ExactPressure<dim,SANGHYUN_STEADYP>();
-			exact_gradient   = new ExactGradient<dim,SANGHYUN_STEADYP>();
-			right_hand_side  = new RightHandSide<dim,SANGHYUN_STEADYP>();
+			exact_pressure   = new ExactPressure<dim,ANALYTIC_STEADYP>();
+			exact_gradient   = new ExactGradient<dim,ANALYTIC_STEADYP>();
+			right_hand_side  = new RightHandSide<dim,ANALYTIC_STEADYP>();
 			dirichlet        = exact_pressure;
-			neumann          = new Neumann<dim,SANGHYUN_STEADYP>();
-			break;
-		case PEAK:
-			analytic = true;
-			exact_pressure   = new ExactPressure<dim,PEAK>();
-			initial_pressure = exact_pressure;
-			dirichlet        = exact_pressure;
-			exact_gradient   = new ExactGradient<dim,PEAK>();
-			neumann          = new Neumann<dim,PEAK>();
-			break;
-		case FRONT:
-			analytic = false;
-			exact_gradient   = new ExactGradient<dim,FRONT>();
-			neumann          = new Neumann<dim,FRONT>();
+			neumann          = new Neumann<dim,ANALYTIC_STEADYP>();
 			break;
 		case FRACTURE_ANALYTIC:
 			Assert(dim == 2, ExcNotImplemented());
@@ -1308,32 +1029,14 @@ void ProblemFunctionsFlow<dim>::set_problem(ProblemType pt)
 			dirichlet        = exact_pressure;
 			right_hand_side_fracture = new ConstantFunction<dim>(1.0);
 			break;
-		case FLEMISCH:
-		case FLEMISCH_RESOLVED:
+		case REGULAR_NETWORK:
+		case REGULAR_NETWORK_RESOLVED:
 			Assert(dim == 2, ExcNotImplemented());
 			analytic = false;
 			dirichlet        = new ConstantFunction<dim>(1.0);
-			neumann          = new Neumann<dim,FLEMISCH>();
-			break;
-		case FRACTURE_TEST:
-			analytic = false;
-			exact_pressure   = new LinearDecreasing<dim>(0);
-			exact_gradient   = new ExactGradient<dim, FRACTURE_TEST>();
-			break;
-		case FRACTURE_INCLINED:
-			analytic = false;
-			exact_pressure   = new ExactPressure<dim,FRACTURE_INCLINED>();
-			dirichlet        = exact_pressure;
-			exact_gradient   = new ExactGradient<dim,FRACTURE_INCLINED>();
-			break;
-		case FRACTURE_ANGLE:
-			analytic = false;
-			exact_pressure   = new ExactPressure<dim,FRACTURE_ANGLE>();
-			dirichlet        = exact_pressure;
-			exact_gradient   = new ExactGradient<dim,FRACTURE_ANGLE>();
+			neumann          = new Neumann<dim,REGULAR_NETWORK>();
 			break;
 		case CHANNEL:
-		case SINGULAR:
 		case BITMAP:
 			Assert(dim == 2, ExcNotImplemented());
 			analytic = false;
@@ -1398,11 +1101,8 @@ void ProblemFunctionsRock<dim>::set_problem(ProblemType pt)
 		case CHANNEL:
 			permeability = new PermeabilityTensor<dim,CHANNEL>("channel.pgm", 1e-3, 1.0);
 			break;
-		case SINGULAR:
-			permeability = new PermeabilityTensor<dim,SINGULAR>();
-			break;
-		case FLEMISCH_RESOLVED:
-			permeability = new PermeabilityTensor<dim,FLEMISCH_RESOLVED>();
+		case REGULAR_NETWORK_RESOLVED:
+			permeability = new PermeabilityTensor<dim,REGULAR_NETWORK_RESOLVED>();
 			break;
 		default:
 			break;
@@ -1468,40 +1168,23 @@ void ProblemFunctionsTransport<dim>::set_problem(ProblemType pt)
 			boundary_concentration    = exact_concentration;
 			udotn                     = new Neumann<dim,SIMPLE_ANALYTIC>();
 			break;
-		case SANGHYUN:
+		case ANALYTIC:
 			analytic = true;
-			exact_concentration       = new ExactConcentration<dim,SANGHYUN>();
-			initial_concentration     = new ExactConcentration<dim,SANGHYUN>();
-			right_hand_side_transport = new RightHandSideTransport<dim,SANGHYUN>();
+			exact_concentration       = new ExactConcentration<dim,ANALYTIC>();
+			initial_concentration     = new ExactConcentration<dim,ANALYTIC>();
+			right_hand_side_transport = new RightHandSideTransport<dim,ANALYTIC>();
 			boundary_concentration    = exact_concentration;
-			udotn                     = new Neumann<dim,SANGHYUN>();
+			udotn                     = new Neumann<dim,ANALYTIC>();
 			break;
-		case SANGHYUN_STEADYP:
+		case ANALYTIC_STEADYP:
 			analytic = true;
-			exact_concentration    = new ExactConcentration<dim,SANGHYUN>();
-			initial_concentration  = new ExactConcentration<dim,SANGHYUN>();
-			right_hand_side        = new RightHandSide<dim,SANGHYUN_STEADYP>();
+			exact_concentration    = new ExactConcentration<dim,ANALYTIC>();
+			initial_concentration  = new ExactConcentration<dim,ANALYTIC>();
+			right_hand_side        = new RightHandSide<dim,ANALYTIC_STEADYP>();
 			boundary_concentration = exact_concentration;
-			well_concentration     = new WellConcentration<dim,SANGHYUN_STEADYP>();
-			div_velocity           = new DivVelocity<dim,SANGHYUN_STEADYP>();
-			udotn                  = new Neumann<dim,SANGHYUN_STEADYP>();
-			break;
-		case PEAK:
-			Assert(dim == 2, ExcNotImplemented());
-			analytic = true;
-			exact_concentration    = new ExactConcentration<dim,PEAK>();
-			initial_concentration  = new ExactConcentration<dim,PEAK>();
-			boundary_concentration = new ZeroFunction<dim>();
-			udotn                  = new Neumann<dim,PEAK>();
-			div_velocity           = new ZeroFunction<dim>();
-			break;
-		case FRONT:
-			Assert(dim == 2, ExcNotImplemented());
-			analytic = true;
-			exact_concentration    = new ExactConcentration<dim,FRONT>();
-			initial_concentration  = new ExactConcentration<dim,FRONT>();
-			udotn                  = new Neumann<dim,FRONT>();
-			div_velocity           = new ZeroFunction<dim>();
+			well_concentration     = new WellConcentration<dim,ANALYTIC_STEADYP>();
+			div_velocity           = new DivVelocity<dim,ANALYTIC_STEADYP>();
+			udotn                  = new Neumann<dim,ANALYTIC_STEADYP>();
 			break;
 		case CHANNEL:
 			Assert(dim == 2, ExcNotImplemented());
@@ -1511,10 +1194,6 @@ void ProblemFunctionsTransport<dim>::set_problem(ProblemType pt)
 		case SIMPLE_FRAC_RESOLVED:
 			analytic = false;
 			boundary_concentration = new LinearDecreasing<dim>(0);
-			break;
-		case FRACTURE_ANGLE:
-			analytic = false;
-			boundary_concentration = new BoundaryConcentration<dim,FRACTURE_ANGLE>();
 			break;
 		case COMPLEX_NETWORK:
 			analytic = false;
@@ -1540,8 +1219,6 @@ void ProblemFunctionsTransport<dim>::set_inflow_concentration(double inflow)
 {
 	if (problem == CHANNEL)
 		boundary_concentration = new BoundaryConcentration<dim,CHANNEL>(inflow);
-	else if (problem == FRACTURE_ANGLE)
-		boundary_concentration = new BoundaryConcentration<dim,FRACTURE_ANGLE>(inflow);
 	else if (problem == SIMPLE_FRAC_RESOLVED)
 		boundary_concentration = new LinearDecreasing<dim>(0, inflow);
 	else if (problem == COMPLEX_NETWORK)
@@ -1562,7 +1239,7 @@ std::vector<unsigned int> get_boundary_id(ProblemType pt)
 	boundary_ids[2] = 1;
 	boundary_ids[3] = 1;
 	
-	if (pt == FLEMISCH || pt == FLEMISCH_RESOLVED)
+	if (pt == REGULAR_NETWORK || pt == REGULAR_NETWORK_RESOLVED)
 		boundary_ids[0] = 1;
 	
 	return boundary_ids;
