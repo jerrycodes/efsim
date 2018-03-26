@@ -1,0 +1,43 @@
+subsection Grid
+  set Dimension                 = 2
+  set Nx			= 31
+  set Ny			= 31
+  set Refine around fractures   = 5
+  set Resolve close fractures   = true
+end
+subsection Global
+  set Problem type              = REGULAR_NETWORK
+  set Time step size            = 0.01
+  set End time  		= 0.5
+  set No quadrature points 	= 2
+  set Use explicit velocity     = false
+end
+subsection Fracture
+  set Permeability fracture	= 1e4
+  set Width	   		= 1e-4
+  set Output file base		= fracture_rfn
+end
+subsection Pressure solver
+  set Dirichlet penalty		= 10.0
+  set Output file base		= solution_pressure_rfn
+  set S form 	  		= 1.0
+  set Weak BCs		        = false
+  set Linear solver tolerance   = 1e-15
+  set SSOR relaxation coeff	= 1.5
+end
+subsection Postprocessing
+  set Apply postprocessing	= true
+  set Residual tolerance	= 1e-10
+  set Update neumann boundary   = false
+  set Update dirichlet boundary = true
+  set Harmonic weighting        = true
+  set Weighted L2-norm          = true
+end
+subsection Transport solver
+  set Solver tolerance		= 1e-10
+  set Output file base		= solution_transport_rfn
+  set Inflow concentration	= 1.0
+  set Use exact velocity	= false
+  set Do transport		= true
+  set Stride			= 10
+end

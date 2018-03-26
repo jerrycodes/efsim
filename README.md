@@ -47,10 +47,10 @@ will run a series of integration and benchmark tests to check if the code runs c
 
 After a successful installation, the build directory should now contain a number of binaries. The two main application programs are `spsim` and `efsim`, see  [Introduction](#Introduction) above. These are run with the commands
 
-    ./spsim input.prm
+    ./spsim input_spsim.prm
 or
 
-    ./efsim input_frac.prm
+    ./efsim input_efsim.prm
 Examples of input files are found in the base directory `input_files`.  For documentation of the input files, run
 
     ./spsim -help

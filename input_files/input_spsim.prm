@@ -1,0 +1,44 @@
+subsection Grid
+  set Dimension                 = 2
+  set Grid type			= Regular
+  set VTK file			= 8cellmodel.vtk
+  set Uniform 1D grid		= false
+  set Global refinement		= 5
+  set Do local refinement  	= false
+  set Distortion factor         = 0.0
+end
+subsection Global
+  set Problem type              = LOWPERM_REGION
+  set Time step size            = 0.05
+  set Time step size 2		= 0.1
+  set Time to change dt         = 1.0
+  set End time  		= 2.0
+  set No quadrature points 	= 2
+end
+subsection Pressure solver
+  set Alpha			= 1.0
+  set Dirichlet penalty		= 10.0
+  set Output file base		= solution_pressure_barrier
+  set S form 	  		= 1.0
+  set Weak BCs		        = false
+  set Linear solver tolerance   = 1e-10
+  set SSOR relaxation coeff	= 1.5
+end
+subsection Postprocessing
+  set Method			= MM
+  set Residual tolerance	= 1e-10
+  set Update neumann boundary   = false
+  set Update dirichlet boundary = true
+  set Dirichlet flux recovery   = false
+  set Harmonic weighting        = true
+  set Weighted L2-norm          = true
+end
+subsection Transport solver
+  set Do transport              = true
+  set Degree			= 0
+  set Solver tolerance		= 1e-10
+  set Output file base		= solution_transport_barrier
+  set Inflow concentration	= 1.0
+  set Use exact velocity	= false
+  set Strid			= 1
+end
